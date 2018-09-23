@@ -14,9 +14,6 @@ class Block {
 }
 
 class Blockchain {
-  constructor() {
-    this.chain = [];
-  }
 
   putBlockToDB(newBlock, height) {
     newBlock.height = height;
@@ -29,8 +26,7 @@ class Blockchain {
   async addBlock(newBlock) {
     try {
       let blockHeight = await this.getBlockHeight();
-      if (blockHeight === 0) await this.putBlockToDB(new Block("First block in the chain - Genesis block"), blockHeight);
-      else if (blockHeight > 0) blockHeight -= 1;
+      if (blockHeight === 0) await this.putBlockToDB(new Block("First block in the chain - Genesis block"), 0);
 
       // previous block hash
       const prev = await this.getBlock(blockHeight);
@@ -44,13 +40,14 @@ class Blockchain {
   }
 
   // Get block height
+  // blockHeight is gonna be TotalBlock number in the chains - 1
   getBlockHeight() {
     return new Promise((resolve, reject) => {
       let count = 0;
       db.createKeyStream()
         .on("data", () => count++)
         .on("error", (err) => reject(console.log("Unable to read data stream!", err)))
-        .on("close", () => resolve(count));
+        .on("close", () => resolve((count > 0) ? count - 1: 0));
     });
   }
 
@@ -85,11 +82,11 @@ class Blockchain {
       // if validation is gonna be failed, it push false into errorLog, otherwise, true.
       const errorLog = [];
       const blockHeight = await this.getBlockHeight();
-      for (let i = 0; i < blockHeight - 1; i++) {
+      for (let i = 0; i <= blockHeight; i++) {
         // validate block
         errorLog.push(this.validateBlock(i));
         // compare blocks hash link
-        errorLog.push(this.getBlock(i).hash === this.getBlock(i + 1).previousBlockHash);
+        errorLog.push(this.getBlock(i).hash === this.getBlock(i - 1).previousBlockHash);
       }
       return Promise.all(errorLog).then((result) => {
         // if something wrong happed, result supposed to hold error
