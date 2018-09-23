@@ -65,7 +65,7 @@ class Blockchain {
   async validateBlock(blockHeight) {
     try {
       const block = await this.getBlock(blockHeight);
-      console.log(block);
+      console.log("tested Block # " + blockHeight + " " + block);
       let blockHash = block.hash;
       block.hash = "";
       let validBlockHash = SHA256(JSON.stringify(block)).toString();
@@ -86,7 +86,7 @@ class Blockchain {
         // validate block
         errorLog.push(this.validateBlock(i));
         // compare blocks hash link
-        errorLog.push(this.getBlock(i).hash === this.getBlock(i - 1).previousBlockHash);
+        if (i > 0) errorLog.push(this.getBlock(i).hash === this.getBlock(i - 1).previousBlockHash);
       }
       return Promise.all(errorLog).then((result) => {
         // if something wrong happed, result supposed to hold error
