@@ -9,11 +9,11 @@ npm init
 ```
 - Install crypto-js with --save flag to save dependency to our package.json file
 ```
-npm install crypto-js --save
+yarn add crypto-js -D
 ```
 - Install level with --save flag
 ```
-npm install level --save
+yarn add level -D
 ```
 
 ## Testing
@@ -31,7 +31,7 @@ let blockchain = new Blockchain();
 ```
 5: Generate 10 blocks using a for loop
 ```
-for (var i = 0; i <= 10; i++) {
+for (let i = 0; i <= 10; i++) {
   blockchain.addBlock(new Block("test data "+i));
 }
 ```
@@ -42,7 +42,7 @@ blockchain.validateChain();
 7: Induce errors by changing block data
 ```
 let inducedErrorBlocks = [2,4,7];
-for (var i = 0; i < inducedErrorBlocks.length; i++) {
+for (let i = 0; i < inducedErrorBlocks.length; i++) {
   blockchain.chain[inducedErrorBlocks[i]].data='induced chain error';
 }
 ```
